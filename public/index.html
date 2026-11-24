@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111827">
+  <title>EstoqueJá | Controle de materiais</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <main id="login-screen" class="login-wrap">
+    <section class="login-card">
+      <div class="brand-mark">ER</div>
+      <p class="eyebrow">GESTÃO INTERNA</p>
+      <h1>Estoque<span>Já</span></h1>
+      <p class="muted">Controle de materiais e patrimônio em um só lugar.</p>
+      <form id="login-form">
+        <label for="username">Usuário</label>
+        <input id="username" name="username" autocomplete="username" required>
+        <label for="password">Senha</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+        <button class="btn primary full" type="submit">Entrar no sistema</button>
+        <p id="login-error" class="error-text"></p>
+      </form>
+      <p class="small muted">Acesso restrito a funcionários autorizados.</p>
+    </section>
+  </main>
+
+  <div id="app-shell" class="app-shell hidden">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><div class="brand-mark small-mark">ER</div><div><strong>EstoqueJá</strong><small>Gestão da rádio</small></div></div>
+      <nav class="nav">
+        <button class="nav-item active" data-page="dashboard"><span>▦</span> Visão geral</button>
+        <button class="nav-item" data-page="items"><span>▤</span> Itens e patrimônio</button>
+        <button class="nav-item" data-page="movements"><span>↕</span> Movimentações</button>
+        <button class="nav-item" data-page="categories"><span>▧</span> Categorias</button>
+      </nav>
+      <div class="sidebar-bottom"><div class="user-avatar" id="user-initials">U</div><div class="user-info"><strong id="user-name">Usuário</strong><small id="user-role">Operador</small></div><button id="logout-btn" class="icon-btn" title="Sair" aria-label="Sair">↪</button></div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar"><div><p class="eyebrow" id="page-eyebrow">PAINEL DE CONTROLE</p><h1 id="page-title">Visão geral</h1></div><div class="topbar-right"><span class="online-dot"></span><span class="muted small">Sistema local</span><button class="btn primary" id="quick-add">＋ Novo item</button></div></header>
+
+      <section id="page-dashboard" class="page">
+        <div class="welcome-row"><div><h2>Bom dia, <span id="welcome-name">equipe</span>.</h2><p class="muted">Confira a situação do estoque da rádio.</p></div><span class="date-pill" id="today-date"></span></div>
+        <div class="stats-grid">
+          <article class="stat-card"><div class="stat-top"><span>Total de itens</span><span class="stat-icon">▤</span></div><strong id="stat-total">—</strong><small>Cadastros ativos</small></article>
+          <article class="stat-card"><div class="stat-top"><span>Consumíveis</span><span class="stat-icon">◫</span></div><strong id="stat-consumables">—</strong><small>Materiais de consumo</small></article>
+          <article class="stat-card"><div class="stat-top"><span>Equipamentos</span><span class="stat-icon">▣</span></div><strong id="stat-equipment">—</strong><small>Patrimônio permanente</small></article>
+          <article class="stat-card warning-card"><div class="stat-top"><span>Estoque baixo</span><span class="stat-icon">!</span></div><strong id="stat-low">—</strong><small>Itens no mínimo ou abaixo</small></article>
+        </div>
+        <div class="dashboard-grid">
+          <section class="panel"><div class="panel-heading"><div><h3>Estoque em atenção</h3><p class="muted small">Itens que precisam de reposição</p></div><button class="text-btn" data-goto="items">Ver itens →</button></div><div id="low-stock-list" class="table-wrap"></div></section>
+          <section class="panel"><div class="panel-heading"><div><h3>Movimentações recentes</h3><p class="muted small">Últimos registros realizados</p></div><button class="text-btn" data-goto="movements">Ver histórico →</button></div><div id="recent-list" class="activity-list"></div></section>
+        </div>
+      </section>
+
+      <section id="page-items" class="page hidden">
+        <div class="toolbar"><div><h2>Itens e patrimônio</h2><p class="muted">Consulte e gerencie materiais da rádio.</p></div><button class="btn primary" id="add-item">＋ Cadastrar item</button></div>
+        <div class="filter-bar"><div class="search-box"><span>⌕</span><input id="item-search" placeholder="Buscar por nome, código, categoria..." aria-label="Buscar itens"></div><select id="item-type-filter" aria-label="Filtrar tipo"><option value="">Todos os tipos</option><option value="consumivel">Consumíveis</option><option value="equipamento">Equipamentos</option></select></div>
+        <section class="panel"><div id="items-table" class="table-wrap"></div></section>
+      </section>
+
+      <section id="page-categories" class="page hidden">
+        <div class="toolbar"><div><h2>Categorias</h2><p class="muted">Organize os produtos por tipo de material.</p></div><button class="btn primary" id="add-category">＋ Nova categoria</button></div>
+        <section class="panel"><div id="categories-table" class="table-wrap"></div></section>
+      </section>
+
+      <section id="page-movements" class="page hidden">
+        <div class="toolbar"><div><h2>Movimentações</h2><p class="muted">Histórico de entradas, saídas e ajustes.</p></div><button class="btn primary" id="add-movement">＋ Registrar movimentação</button></div>
+        <section class="panel"><div id="movements-table" class="table-wrap"></div></section>
+      </section>
+      <footer>EstoqueJá <span>•</span> MVP 1.0 <span>•</span> Controle interno</footer>
+    </main>
+  </div>
+
+  <dialog id="item-dialog" class="modal">
+    <form id="item-form" method="dialog">
+      <div class="modal-head"><div><p class="eyebrow">CADASTRO</p><h2>Novo item</h2></div><button type="button" class="close-btn" data-close="item-dialog" aria-label="Fechar">×</button></div>
+      <div class="form-grid">
+        <div><label for="item-code">Código interno *</label><input id="item-code" name="code" maxlength="40" required placeholder="Ex.: MAT-001"></div>
+        <div><label for="item-name">Nome do item *</label><input id="item-name" name="name" maxlength="160" required placeholder="Ex.: Cabo de rede CAT6"></div>
+        <div><label for="item-type">Tipo *</label><select id="item-type" name="item_type" required><option value="consumivel">Material consumível</option><option value="equipamento">Equipamento permanente</option></select></div>
+        <div><label for="item-category">Categoria *</label><input id="item-category" name="category" required list="category-options" placeholder="Ex.: Rede, Áudio, Energia"><datalist id="category-options"></datalist></div>
+        <div><label for="item-price">Preço unitário (R$) *</label><input id="item-price" name="price" type="number" min="0" step="0.01" value="0" required></div>
+        <div><label for="item-quantity">Quantidade inicial *</label><input id="item-quantity" name="quantity" type="number" min="0" step="1" value="0" required></div>
+        <div><label for="item-minimum">Estoque mínimo *</label><input id="item-minimum" name="minimum_quantity" type="number" min="0" step="1" value="0" required></div>
+        <div><label for="item-unit">Unidade</label><select id="item-unit" name="unit"><option value="un">Unidade (un)</option><option value="m">Metro (m)</option><option value="rolo">Rolo</option><option value="caixa">Caixa</option><option value="pct">Pacote</option><option value="par">Par</option></select></div>
+        <div><label for="item-location">Localização</label><input id="item-location" name="location" placeholder="Ex.: Rack, Almoxarifado"></div>
+        <div><label for="item-brand">Marca</label><input id="item-brand" name="brand"></div>
+        <div><label for="item-model">Modelo</label><input id="item-model" name="model"></div>
+        <div><label for="item-serial">Número de série</label><input id="item-serial" name="serial_number"></div>
+        <div><label for="item-asset">Nº de patrimônio</label><input id="item-asset" name="asset_tag"></div>
+        <div class="full-field"><label for="item-assigned">Responsável / setor</label><input id="item-assigned" name="assigned_to" placeholder="Ex.: Estúdio 1, João"></div>
+        <div class="full-field"><label for="item-description">Descrição / observações</label><textarea id="item-description" name="description" rows="2"></textarea></div>
+      </div>
+      <p class="form-note">Equipamentos permanentes devem ser cadastrados individualmente, um registro por unidade.</p>
+      <div class="modal-actions"><button type="button" class="btn secondary" data-close="item-dialog">Cancelar</button><button class="btn primary" type="submit">Salvar item</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="category-dialog" class="modal">
+    <form id="category-form" method="dialog">
+      <div class="modal-head"><div><p class="eyebrow">ORGANIZAÇÃO</p><h2 id="category-dialog-title">Nova categoria</h2></div><button type="button" class="close-btn" data-close="category-dialog" aria-label="Fechar">×</button></div>
+      <div class="form-grid">
+        <div class="full-field"><label for="category-name">Nome *</label><input id="category-name" name="name" required maxlength="100" placeholder="Ex.: Áudio, Rede, Informática"></div>
+        <div class="full-field"><label for="category-description">Descrição</label><textarea id="category-description" name="description" rows="2" maxlength="300"></textarea></div>
+      </div>
+      <div class="modal-actions"><button type="button" class="btn secondary" data-close="category-dialog">Cancelar</button><button class="btn primary" type="submit">Salvar categoria</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="movement-dialog" class="modal">
+    <form id="movement-form" method="dialog">
+      <div class="modal-head"><div><p class="eyebrow">ESTOQUE</p><h2>Registrar movimentação</h2></div><button type="button" class="close-btn" data-close="movement-dialog" aria-label="Fechar">×</button></div>
+      <div class="form-grid">
+        <div class="full-field"><label for="movement-item">Item *</label><select id="movement-item" name="item_id" required></select></div>
+        <div><label for="movement-type">Operação *</label><select id="movement-type" name="movement_type"><option value="entrada">Entrada</option><option value="saida">Saída</option></select></div>
+        <div><label for="movement-quantity" id="movement-quantity-label">Quantidade *</label><input id="movement-quantity" name="quantity" type="number" min="1" step="1" required></div>
+        <div class="full-field"><label for="movement-reason">Motivo *</label><input id="movement-reason" name="reason" required maxlength="240" placeholder="Ex.: Compra, instalação, empréstimo..."></div>
+        <div class="full-field"><label for="movement-responsible">Responsável / destino</label><input id="movement-responsible" name="responsible" maxlength="120" placeholder="Pessoa ou setor"></div>
+      </div>
+      <p class="form-note" id="movement-help">As movimentações ficam registradas no histórico.</p>
+      <div class="modal-actions"><button type="button" class="btn secondary" data-close="movement-dialog">Cancelar</button><button class="btn primary" type="submit">Confirmar movimentação</button></div>
+    </form>
+  </dialog>
+  <script src="/app.js"></script>
+</body>
+</html>
