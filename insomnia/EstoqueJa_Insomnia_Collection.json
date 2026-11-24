@@ -1,0 +1,1673 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-11-24T14:15:02.000Z",
+  "__export_source": "insomnia.desktop.app:estoqueja-collection-builder",
+  "resources": [
+    {
+      "_id": "wrk_4ee678d8d0ad44059a9439d5761c9f5c",
+      "parentId": null,
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "name": "EstoqueJá - API para apresentação",
+      "description": "Coleção de testes da API EstoqueJá hospedada no Render e conectada ao PostgreSQL do Supabase.",
+      "scope": "collection",
+      "_type": "workspace"
+    },
+    {
+      "_id": "env_cbf9b230deab43d6816a68df72a5b69c",
+      "parentId": "wrk_4ee678d8d0ad44059a9439d5761c9f5c",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "name": "Base Environment",
+      "data": {
+        "base_url": "https://estoqueja-radio.onrender.com",
+        "admin_username": "PREENCHA_SEU_LOGIN",
+        "admin_password": "PREENCHA_SUA_SENHA",
+        "categoria_audio_id": "",
+        "categoria_cabos_id": "",
+        "categoria_informatica_id": "",
+        "categoria_rede_id": "",
+        "categoria_energia_id": "",
+        "categoria_temp_id": "",
+        "produto_cabo_xlr_id": "",
+        "produto_conector_xlr_id": "",
+        "produto_pilha_aa_id": "",
+        "produto_cabo_rede_id": "",
+        "produto_microfone_id": "",
+        "produto_switch_id": "",
+        "produto_teste_exclusao_id": ""
+      },
+      "dataPropertyOrder": {
+        "&": [
+          "base_url",
+          "admin_username",
+          "admin_password",
+          "categoria_audio_id",
+          "categoria_cabos_id",
+          "categoria_informatica_id",
+          "categoria_rede_id",
+          "categoria_energia_id",
+          "categoria_temp_id",
+          "produto_cabo_xlr_id",
+          "produto_conector_xlr_id",
+          "produto_pilha_aa_id",
+          "produto_cabo_rede_id",
+          "produto_microfone_id",
+          "produto_switch_id",
+          "produto_teste_exclusao_id"
+        ]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 0,
+      "_type": "environment"
+    },
+    {
+      "_id": "fld_5980108d108849048af34d16be917a72",
+      "parentId": "wrk_4ee678d8d0ad44059a9439d5761c9f5c",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "name": "00 - Saúde, autenticação e painel",
+      "description": "Execute nesta ordem: saúde, login e depois as rotas protegidas. A coleção guarda cookies de sessão automaticamente.",
+      "environment": {},
+      "environmentPropertyOrder": {
+        "&": []
+      },
+      "metaSortKey": 2000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_5e3e67d1e6504b13ab474be3a5ab4d88",
+      "parentId": "fld_5980108d108849048af34d16be917a72",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/health",
+      "name": "01 - Verificar API e Supabase",
+      "description": "Público. Esperado: 200 com status ok e database connected.",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_c21587de6c4c4c62964795353797a2a4",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529699824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    },
+    {
+      "_id": "req_93aeb70b137a4e4d9035a1f07619219c",
+      "parentId": "fld_5980108d108849048af34d16be917a72",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/auth/login",
+      "name": "02 - Login administrador",
+      "description": "Preencha admin_username e admin_password no Base Environment. Esperado: 200. A resposta define o cookie de sessão estoque.sid; mantenha o cookie jar habilitado.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"username\": \"{{ _.admin_username }}\",\n  \"password\": \"{{ _.admin_password }}\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_95dd0f725ec9401d8de992081f3224e9",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_9ed20ba8edb74d498aae67d04ec908f4",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529698824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Login realizado (200)', () => { insomnia.expect(insomnia.response.status).to.eql(200); });\nconst body = insomnia.response.json();\nif (body.user?.id) insomnia.environment.set('usuario_id', String(body.user.id));"
+    },
+    {
+      "_id": "req_578d0b5d628241d2bcfdc66a1dfcdd83",
+      "parentId": "fld_5980108d108849048af34d16be917a72",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/auth/me",
+      "name": "03 - Consultar usuário autenticado",
+      "description": "Confirma se o cookie de sessão foi enviado. Esperado: 200 com objeto user.",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_338729c8782a4d529f9a914525d79c6b",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529697824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    },
+    {
+      "_id": "req_67839af6cdc8401995d65aeb8fbd8910",
+      "parentId": "fld_5980108d108849048af34d16be917a72",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/dashboard",
+      "name": "04 - Dashboard",
+      "description": "Retorna total de itens, consumíveis, equipamentos, estoque baixo e movimentações recentes.",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_0f12b8b235b249dcb8daff318fb49555",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529696824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    },
+    {
+      "_id": "fld_d24ea19eb2bb43e5a0723fab6f658512",
+      "parentId": "wrk_4ee678d8d0ad44059a9439d5761c9f5c",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "name": "01 - Categorias (CRUD e dados iniciais)",
+      "description": "Crie categorias antes dos produtos. As categorias DEMO são fictícias e servem apenas para a apresentação.",
+      "environment": {},
+      "environmentPropertyOrder": {
+        "&": []
+      },
+      "metaSortKey": 7000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_729f605662464f029cee44b153496f22",
+      "parentId": "fld_d24ea19eb2bb43e5a0723fab6f658512",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/categorias",
+      "name": "01 - Criar categoria temporária (CRUD)",
+      "description": "Cria categoria exclusiva para demonstrar CRUD de categorias. Execute uma vez.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"DEMO - Categoria temporária\",\n  \"description\": \"Categoria de teste para demonstrar criação, consulta, edição e exclusão.\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_704556c768e94d38ae6ff7ceeea626e1",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_7f3a15fe93704db0bdc11a584144275b",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529694824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 201 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(201); });\nconst body = insomnia.response.json();\nif (body.categoria?.id) insomnia.environment.set('categoria_temp_id', String(body.categoria?.id));"
+    },
+    {
+      "_id": "req_440047fa4ed546a689b62d2bf7591b34",
+      "parentId": "fld_d24ea19eb2bb43e5a0723fab6f658512",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/categorias/{{ _.categoria_temp_id }}",
+      "name": "02 - Consultar categoria temporária",
+      "description": "Usa automaticamente o ID salvo após a criação.",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_b613def5cf064906847a42339ec770d3",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529693824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    },
+    {
+      "_id": "req_f908daed97a14a8cb0bbd54debbfa93f",
+      "parentId": "fld_d24ea19eb2bb43e5a0723fab6f658512",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/categorias/{{ _.categoria_temp_id }}",
+      "name": "03 - Editar categoria temporária",
+      "description": "",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"DEMO - Categoria temporária editada\",\n  \"description\": \"Nome alterado pela API para demonstrar PUT.\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_17ff39c14bc54e578e5c015d55591198",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_d66301d393854112b8b670d922ee27e8",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529692824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    },
+    {
+      "_id": "req_aca998eb6e2a49f9af32596bde248f73",
+      "parentId": "fld_d24ea19eb2bb43e5a0723fab6f658512",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/categorias/{{ _.categoria_temp_id }}",
+      "name": "04 - Excluir categoria temporária",
+      "description": "A categoria está sem produtos vinculados, portanto deve responder 200.",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_875ba2d740fd440aa213e8ce36c2affe",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529691824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    },
+    {
+      "_id": "req_b053b848fd55439796998c43017250c3",
+      "parentId": "fld_d24ea19eb2bb43e5a0723fab6f658512",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/categorias",
+      "name": "05 - Criar categoria Áudio",
+      "description": "Execute uma vez. Se a categoria já existir, a API responderá 409; nesse caso, use a listagem e siga adiante.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"DEMO - Áudio e Estúdio\",\n  \"description\": \"Microfones, fones e acessórios de estúdio.\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_917037fc5c4149ef9b1de178c5cf54b2",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_5482691d51d045e996e370ed52f250b5",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529690824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 201 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(201); });\nconst body = insomnia.response.json();\nif (body.categoria?.id) insomnia.environment.set('categoria_audio_id', String(body.categoria?.id));"
+    },
+    {
+      "_id": "req_faa841fbb3a747b69547c600a9bc64c6",
+      "parentId": "fld_d24ea19eb2bb43e5a0723fab6f658512",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/categorias",
+      "name": "06 - Criar categoria Cabos",
+      "description": "Execute uma vez. Se a categoria já existir, a API responderá 409; nesse caso, use a listagem e siga adiante.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"DEMO - Cabos e Conectores\",\n  \"description\": \"Cabos XLR, P10, rede e conectores.\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_3d41c2b5d1f04fccb812363112c89451",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_f462260950914206a45331706d63d661",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529689824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 201 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(201); });\nconst body = insomnia.response.json();\nif (body.categoria?.id) insomnia.environment.set('categoria_cabos_id', String(body.categoria?.id));"
+    },
+    {
+      "_id": "req_bf8acec2cfe841ad90c6251339b1614c",
+      "parentId": "fld_d24ea19eb2bb43e5a0723fab6f658512",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/categorias",
+      "name": "07 - Criar categoria Informática",
+      "description": "Execute uma vez. Se a categoria já existir, a API responderá 409; nesse caso, use a listagem e siga adiante.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"DEMO - Informática\",\n  \"description\": \"Computadores e periféricos de TI.\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_eaf5782e89a442bda10bc35d8af875c3",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_a520918192904d608eed31f279aec85b",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529688824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 201 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(201); });\nconst body = insomnia.response.json();\nif (body.categoria?.id) insomnia.environment.set('categoria_informatica_id', String(body.categoria?.id));"
+    },
+    {
+      "_id": "req_b8f28980ab4a4fd780442b78c860cff7",
+      "parentId": "fld_d24ea19eb2bb43e5a0723fab6f658512",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/categorias",
+      "name": "08 - Criar categoria Rede",
+      "description": "Execute uma vez. Se a categoria já existir, a API responderá 409; nesse caso, use a listagem e siga adiante.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"DEMO - Rede e Infraestrutura\",\n  \"description\": \"Switches, roteadores e acessórios de rede.\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_5526a6a37ea548c68182db94a0bb9c20",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_2395cce4d579479988b9b058894ccf97",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529687824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 201 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(201); });\nconst body = insomnia.response.json();\nif (body.categoria?.id) insomnia.environment.set('categoria_rede_id', String(body.categoria?.id));"
+    },
+    {
+      "_id": "req_5891b6f3f9064366a9b0d77d3f9e0bb5",
+      "parentId": "fld_d24ea19eb2bb43e5a0723fab6f658512",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/categorias",
+      "name": "09 - Criar categoria Energia",
+      "description": "Execute uma vez. Se a categoria já existir, a API responderá 409; nesse caso, use a listagem e siga adiante.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"DEMO - Energia\",\n  \"description\": \"Pilhas, fontes e materiais de energia.\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_65f8ac0e3c864100b46aeeb30b9ce0b0",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_3cd6223e88324b74b1e73bc6705c5e14",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529686824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 201 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(201); });\nconst body = insomnia.response.json();\nif (body.categoria?.id) insomnia.environment.set('categoria_energia_id', String(body.categoria?.id));"
+    },
+    {
+      "_id": "req_b16c1c1062444c749c716be97e2497ef",
+      "parentId": "fld_d24ea19eb2bb43e5a0723fab6f658512",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/categorias",
+      "name": "10 - Listar todas as categorias",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_c817bd74d42747a4a7485ca45eeb9a8b",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529685824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    },
+    {
+      "_id": "req_474faefed1974f59a0756d2e55e5e0ed",
+      "parentId": "fld_d24ea19eb2bb43e5a0723fab6f658512",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/categorias",
+      "name": "11 - Demonstrar conflito: categoria duplicada (409)",
+      "description": "Caso de erro proposital. Como a categoria já foi criada, o esperado é 409 Conflict.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"DEMO - Áudio e Estúdio\",\n  \"description\": \"Teste intencional de duplicidade.\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_1ebabccd4bd7439fabc97e98e0b6fb0b",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_6ebdf886505a446380373a4d58e5fd9d",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529684824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 409 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(409); });"
+    },
+    {
+      "_id": "fld_8456b38a6f7c4a3ea8bb930682d496b8",
+      "parentId": "wrk_4ee678d8d0ad44059a9439d5761c9f5c",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "name": "02 - Produtos (CRUD e popular estoque)",
+      "description": "Cadastre os produtos de demonstração pela API. Códigos e patrimônios começam com DEMO para não serem confundidos com o inventário real da rádio.",
+      "environment": {},
+      "environmentPropertyOrder": {
+        "&": []
+      },
+      "metaSortKey": 19000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_4c843a31a1a946caad5903cef24680f9",
+      "parentId": "fld_8456b38a6f7c4a3ea8bb930682d496b8",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/produtos",
+      "name": "01 - Cadastrar cabo XLR",
+      "description": "Cadastre pela API. O ID retornado será salvo automaticamente no ambiente do Insomnia.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"codigo\": \"DEMO-MAT-001\",\n  \"nome\": \"Cabo XLR balanceado 10m\",\n  \"categoria\": \"DEMO - Cabos e Conectores\",\n  \"preco\": 39.9,\n  \"quantidade_estoque\": 15,\n  \"estoque_minimo\": 5,\n  \"tipo_item\": \"consumivel\",\n  \"unidade\": \"un\",\n  \"descricao\": \"Cabo balanceado para ligação de microfones e equipamentos de áudio. Item fictício de demonstração.\",\n  \"localizacao\": \"Almoxarifado de TI\",\n  \"marca\": \"DEMO Audio\",\n  \"modelo\": \"XLR-10M\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_7fceb1f4c6784f77b6f3325e9f0174a6",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_89363d6e024448cdb0faf2589ef7ebf4",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529682824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 201 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(201); });\nconst body = insomnia.response.json();\nif (body.produto?.id) insomnia.environment.set('produto_cabo_xlr_id', String(body.produto?.id));"
+    },
+    {
+      "_id": "req_cc5f73609272482da3a23b07a863e512",
+      "parentId": "fld_8456b38a6f7c4a3ea8bb930682d496b8",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/produtos",
+      "name": "02 - Cadastrar conector XLR (estoque baixo)",
+      "description": "Cadastre pela API. O ID retornado será salvo automaticamente no ambiente do Insomnia.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"codigo\": \"DEMO-MAT-002\",\n  \"nome\": \"Conector XLR macho\",\n  \"categoria\": \"DEMO - Cabos e Conectores\",\n  \"preco\": 18.5,\n  \"quantidade_estoque\": 2,\n  \"estoque_minimo\": 8,\n  \"tipo_item\": \"consumivel\",\n  \"unidade\": \"un\",\n  \"descricao\": \"Conector para manutenção de cabos de microfone. Saldo intencionalmente abaixo do mínimo.\",\n  \"localizacao\": \"Almoxarifado de TI\",\n  \"marca\": \"DEMO Audio\",\n  \"modelo\": \"XLR-M\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_0271a63141d64886af9cfb5f50e817e5",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_f717f8590c9046f4b1feeaa72960e712",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529681824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 201 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(201); });\nconst body = insomnia.response.json();\nif (body.produto?.id) insomnia.environment.set('produto_conector_xlr_id', String(body.produto?.id));"
+    },
+    {
+      "_id": "req_7b909832388f494687a7b72ed6d370b4",
+      "parentId": "fld_8456b38a6f7c4a3ea8bb930682d496b8",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/produtos",
+      "name": "03 - Cadastrar pilhas AA",
+      "description": "Cadastre pela API. O ID retornado será salvo automaticamente no ambiente do Insomnia.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"codigo\": \"DEMO-MAT-003\",\n  \"nome\": \"Pilha AA alcalina\",\n  \"categoria\": \"DEMO - Energia\",\n  \"preco\": 5.9,\n  \"quantidade_estoque\": 24,\n  \"estoque_minimo\": 6,\n  \"tipo_item\": \"consumivel\",\n  \"unidade\": \"un\",\n  \"descricao\": \"Pilha alcalina para acessórios sem fio. Item fictício de demonstração.\",\n  \"localizacao\": \"Almoxarifado\",\n  \"marca\": \"DEMO Power\",\n  \"modelo\": \"AA\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_6446a6dd11e64e8db2ef8248587b5a17",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_0617d19099b743aa9bd5229acef2f4d3",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529680824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 201 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(201); });\nconst body = insomnia.response.json();\nif (body.produto?.id) insomnia.environment.set('produto_pilha_aa_id', String(body.produto?.id));"
+    },
+    {
+      "_id": "req_dc27262f553641e5a0aabf82572bd994",
+      "parentId": "fld_8456b38a6f7c4a3ea8bb930682d496b8",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/produtos",
+      "name": "04 - Cadastrar cabo de rede CAT6",
+      "description": "Cadastre pela API. O ID retornado será salvo automaticamente no ambiente do Insomnia.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"codigo\": \"DEMO-MAT-004\",\n  \"nome\": \"Cabo de rede CAT6\",\n  \"categoria\": \"DEMO - Rede e Infraestrutura\",\n  \"preco\": 4.2,\n  \"quantidade_estoque\": 50,\n  \"estoque_minimo\": 15,\n  \"tipo_item\": \"consumivel\",\n  \"unidade\": \"m\",\n  \"descricao\": \"Cabo UTP CAT6 para infraestrutura de rede. Item fictício de demonstração.\",\n  \"localizacao\": \"Almoxarifado de TI\",\n  \"marca\": \"DEMO Network\",\n  \"modelo\": \"CAT6 UTP\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_a1442d6e1bfc4390a7bea16f76f98d92",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_ed031d43935842a0802c66587869e118",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529679824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 201 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(201); });\nconst body = insomnia.response.json();\nif (body.produto?.id) insomnia.environment.set('produto_cabo_rede_id', String(body.produto?.id));"
+    },
+    {
+      "_id": "req_e242ebd7cbea4d05baec01dbe6922a5a",
+      "parentId": "fld_8456b38a6f7c4a3ea8bb930682d496b8",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/produtos",
+      "name": "05 - Cadastrar microfone (patrimônio)",
+      "description": "Cadastre pela API. O ID retornado será salvo automaticamente no ambiente do Insomnia.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"codigo\": \"DEMO-EQP-001\",\n  \"nome\": \"Microfone dinâmico de estúdio\",\n  \"categoria\": \"DEMO - Áudio e Estúdio\",\n  \"preco\": 450.0,\n  \"quantidade_estoque\": 1,\n  \"estoque_minimo\": 0,\n  \"tipo_item\": \"equipamento\",\n  \"unidade\": \"un\",\n  \"descricao\": \"Equipamento unitário de demonstração patrimonial. Não representa bem real da rádio.\",\n  \"localizacao\": \"Estúdio 1\",\n  \"marca\": \"DEMO Audio\",\n  \"modelo\": \"MIC-DYN-01\",\n  \"numero_serie\": \"DEMO-SERIAL-MIC-001\",\n  \"patrimonio\": \"DEMO-PAT-001\",\n  \"responsavel\": \"Estúdio 1\",\n  \"status\": \"em_uso\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_6d3fc274235048418bc51927bff97db5",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_be2d2f1d977049d1a729363e640b3d6f",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529678824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 201 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(201); });\nconst body = insomnia.response.json();\nif (body.produto?.id) insomnia.environment.set('produto_microfone_id', String(body.produto?.id));"
+    },
+    {
+      "_id": "req_24184ffee9da4edda7596c7a66777df9",
+      "parentId": "fld_8456b38a6f7c4a3ea8bb930682d496b8",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/produtos",
+      "name": "06 - Cadastrar switch (patrimônio)",
+      "description": "Cadastre pela API. O ID retornado será salvo automaticamente no ambiente do Insomnia.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"codigo\": \"DEMO-EQP-002\",\n  \"nome\": \"Switch Gigabit 8 portas\",\n  \"categoria\": \"DEMO - Rede e Infraestrutura\",\n  \"preco\": 320.0,\n  \"quantidade_estoque\": 1,\n  \"estoque_minimo\": 0,\n  \"tipo_item\": \"equipamento\",\n  \"unidade\": \"un\",\n  \"descricao\": \"Equipamento unitário de demonstração patrimonial. Não representa bem real da rádio.\",\n  \"localizacao\": \"Rack de TI\",\n  \"marca\": \"DEMO Network\",\n  \"modelo\": \"SW-8G\",\n  \"numero_serie\": \"DEMO-SERIAL-SW-001\",\n  \"patrimonio\": \"DEMO-PAT-002\",\n  \"responsavel\": \"TI\",\n  \"status\": \"em_uso\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_94ddb3e9f3d8410e86fd061b7ce7fec6",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_3b675a897fdf49ab8cce4bf6775dfc33",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529677824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 201 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(201); });\nconst body = insomnia.response.json();\nif (body.produto?.id) insomnia.environment.set('produto_switch_id', String(body.produto?.id));"
+    },
+    {
+      "_id": "req_ac359aa8c67b42b3ab83f704256781c0",
+      "parentId": "fld_8456b38a6f7c4a3ea8bb930682d496b8",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/produtos",
+      "name": "07 - Cadastrar produto descartável (para demonstrar DELETE)",
+      "description": "Cadastre pela API. O ID retornado será salvo automaticamente no ambiente do Insomnia.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"codigo\": \"DEMO-DEL-001\",\n  \"nome\": \"Item temporário para exclusão\",\n  \"categoria\": \"DEMO - Informática\",\n  \"preco\": 0,\n  \"quantidade_estoque\": 0,\n  \"estoque_minimo\": 0,\n  \"tipo_item\": \"consumivel\",\n  \"unidade\": \"un\",\n  \"descricao\": \"Registro de teste sem movimentações; pode ser excluído com segurança durante a demonstração.\",\n  \"localizacao\": \"Teste\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_2fa5b2e9c1814feb83a3cd947c107c95",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_f93b25215ed04244a8b8ae4e724743c0",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529676824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 201 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(201); });\nconst body = insomnia.response.json();\nif (body.produto?.id) insomnia.environment.set('produto_teste_exclusao_id', String(body.produto?.id));"
+    },
+    {
+      "_id": "req_8f1e5e5c0cc44d0287b757b324e585d0",
+      "parentId": "fld_8456b38a6f7c4a3ea8bb930682d496b8",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/produtos",
+      "name": "08 - Listar produtos",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_5bb20661a80f4372b5c48f8ea029c6b5",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529675824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    },
+    {
+      "_id": "req_6d8e786d75c6486ebbd4c1d59a155da0",
+      "parentId": "fld_8456b38a6f7c4a3ea8bb930682d496b8",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/produtos?estoqueBaixo=true",
+      "name": "09 - Filtrar itens com estoque baixo",
+      "description": "Deve incluir o conector XLR com saldo 2 e mínimo 8.",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_ab0eeef9353849998a34c57ad3133f7b",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529674824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    },
+    {
+      "_id": "req_54e672d2ac2c46f89ffbde2dfc1c33b6",
+      "parentId": "fld_8456b38a6f7c4a3ea8bb930682d496b8",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/produtos?busca=cabo",
+      "name": "10 - Pesquisar cabo por texto",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_d210c8dadf7f44949ba6d3b00e33a0ae",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529673824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    },
+    {
+      "_id": "req_e7b274a03d39482a876600e9295fe37a",
+      "parentId": "fld_8456b38a6f7c4a3ea8bb930682d496b8",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/produtos?tipo=equipamento",
+      "name": "11 - Filtrar equipamentos",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_9bdc1f53803c4951a752e443ef7e4500",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529672824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    },
+    {
+      "_id": "req_b7516cbe59714633b413b38ccda81bbb",
+      "parentId": "fld_8456b38a6f7c4a3ea8bb930682d496b8",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/produtos/{{ _.produto_cabo_xlr_id }}",
+      "name": "12 - Consultar produto por ID",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_813438fd0b334678b22405c4e9736957",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529671824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    },
+    {
+      "_id": "req_8b503c8a03b74a229dbfc1f3af80db35",
+      "parentId": "fld_8456b38a6f7c4a3ea8bb930682d496b8",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/produtos/{{ _.produto_cabo_xlr_id }}",
+      "name": "13 - Editar produto",
+      "description": "Demonstra o UPDATE. O saldo é mantido porque quantidade_estoque não foi enviada.",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"Cabo XLR balanceado 10m - atualizado\",\n  \"preco\": 42.5,\n  \"estoque_minimo\": 6,\n  \"descricao\": \"Descrição atualizada pela rota PUT do EstoqueJá. Item fictício de apresentação.\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_8242e49e12fd48e7a2b259f26cbe004f",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_47cd72d2590c4a10a2d4411a7dab9863",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529670824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    },
+    {
+      "_id": "req_273fbcfe17f04eaeadbf5f5981654578",
+      "parentId": "fld_8456b38a6f7c4a3ea8bb930682d496b8",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/produtos/{{ _.produto_teste_exclusao_id }}",
+      "name": "14 - Excluir produto sem movimentações",
+      "description": "O produto temporário foi cadastrado com quantidade zero, portanto não gerou movimentação inicial e pode ser excluído (200).",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_9e678b328eda45c19acdcc09c99f3d0b",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529669824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    },
+    {
+      "_id": "req_5e5f874d038d4f7c871ebc806cc0a474",
+      "parentId": "fld_8456b38a6f7c4a3ea8bb930682d496b8",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/produtos/{{ _.produto_cabo_xlr_id }}",
+      "name": "15 - Demonstrar conflito: produto com histórico (409)",
+      "description": "Teste intencional. O cabo tem movimentação de saldo inicial, então a exclusão deve ser bloqueada para preservar o histórico.",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_b2998f1b2861455a86bd9b20c468048f",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529668824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 409 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(409); });"
+    },
+    {
+      "_id": "req_de14965a2f4e4fb8a71f9b7096b7b15a",
+      "parentId": "fld_8456b38a6f7c4a3ea8bb930682d496b8",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/produtos/999999999",
+      "name": "16 - Consultar produto inexistente (404)",
+      "description": "Teste intencional de recurso inexistente.",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_5d69d2f1e01542db9be580058fc8f307",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529667824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 404 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(404); });"
+    },
+    {
+      "_id": "fld_b4b72de2b7274cbb91ed0d5a77ee8a98",
+      "parentId": "wrk_4ee678d8d0ad44059a9439d5761c9f5c",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "name": "03 - Movimentações (POST, GET e validações)",
+      "description": "Entradas e saídas atualizam o saldo no PostgreSQL dentro de transação. O conector XLR fica com saldo inicial baixo para o teste 400.",
+      "environment": {},
+      "environmentPropertyOrder": {
+        "&": []
+      },
+      "metaSortKey": 36000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_c8c0cf2f317142979f8a8b63baf6e934",
+      "parentId": "fld_b4b72de2b7274cbb91ed0d5a77ee8a98",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/movimentacoes",
+      "name": "01 - Registrar entrada de cabos XLR",
+      "description": "Esperado: 201. O saldo do cabo passa de 15 para 20.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"produto_id\": \"{{ _.produto_cabo_xlr_id }}\",\n  \"tipo\": \"entrada\",\n  \"quantidade\": 5,\n  \"motivo\": \"Compra de reposição para demonstração\",\n  \"responsavel\": \"Equipe de TI\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_58aab42046354cd7a642667337c4ef5a",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_f19e0eaeded9405784126f06cd3f7b6f",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529665824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 201 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(201); });\nconst body = insomnia.response.json();\nif (body.movimentacao?.id) insomnia.environment.set('movimentacao_entrada_id', String(body.movimentacao?.id));"
+    },
+    {
+      "_id": "req_6bf477bd0d97463fbcab6e0154998896",
+      "parentId": "fld_b4b72de2b7274cbb91ed0d5a77ee8a98",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/movimentacoes",
+      "name": "02 - Registrar saída de cabos XLR",
+      "description": "Esperado: 201. O saldo do cabo passa de 20 para 18.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"produto_id\": \"{{ _.produto_cabo_xlr_id }}\",\n  \"tipo\": \"saida\",\n  \"quantidade\": 2,\n  \"motivo\": \"Utilização em manutenção de estúdio\",\n  \"responsavel\": \"Estúdio 1\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_2b4fc060e33a401284478a25b5eb2f81",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_ebadf8c72b004fd4a3eb0f3d4470e529",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529664824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 201 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(201); });\nconst body = insomnia.response.json();\nif (body.movimentacao?.id) insomnia.environment.set('movimentacao_saida_id', String(body.movimentacao?.id));"
+    },
+    {
+      "_id": "req_524066409da24e428f911250bb8d4a58",
+      "parentId": "fld_b4b72de2b7274cbb91ed0d5a77ee8a98",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/movimentacoes",
+      "name": "03 - Listar todas as movimentações",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_ec1931e3c7df47cc935032377989b063",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529663824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    },
+    {
+      "_id": "req_0c9866fa22d54473bcdb770f96510002",
+      "parentId": "fld_b4b72de2b7274cbb91ed0d5a77ee8a98",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/movimentacoes?produto={{ _.produto_cabo_xlr_id }}",
+      "name": "04 - Filtrar movimentações do cabo XLR",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_679358f67b1f48be9ed6c5671c3b81b3",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529662824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    },
+    {
+      "_id": "req_91cb68412ddc48c09a2c277a5ae4bc4e",
+      "parentId": "fld_b4b72de2b7274cbb91ed0d5a77ee8a98",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/movimentacoes?tipo=entrada",
+      "name": "05 - Filtrar somente entradas",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_787accd04be149a18aa4eab23c440115",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529661824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    },
+    {
+      "_id": "req_84bfa1ed7d3d4b7ebb4fc3d7256c645e",
+      "parentId": "fld_b4b72de2b7274cbb91ed0d5a77ee8a98",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/produtos/{{ _.produto_cabo_xlr_id }}/movimentacoes",
+      "name": "06 - Histórico de movimentações de um produto",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_3e4cc55a6342493d8d12ffa195dc106d",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529660824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    },
+    {
+      "_id": "req_6d0f5cf0a35a4663bca1ec74c404f164",
+      "parentId": "fld_b4b72de2b7274cbb91ed0d5a77ee8a98",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/movimentacoes",
+      "name": "07 - Demonstrar regra: saída maior que o saldo (400)",
+      "description": "Teste intencional. O conector possui saldo baixo e esta saída deve retornar 400 sem alterar o banco.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"produto_id\": \"{{ _.produto_conector_xlr_id }}\",\n  \"tipo\": \"saida\",\n  \"quantidade\": 999,\n  \"motivo\": \"Teste de validação: quantidade maior que o saldo\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_a3156549b92646b48fa242f01214086d",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_f416eeb15cb747558f70368175152fd0",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529659824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 400 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(400); });"
+    },
+    {
+      "_id": "req_b4c9616aa147446ebd3ef385430a2bd7",
+      "parentId": "fld_b4b72de2b7274cbb91ed0d5a77ee8a98",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/movimentacoes",
+      "name": "08 - Demonstrar rota de movimentação com produto inexistente (404)",
+      "description": "Teste intencional. Esperado: 404.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"produto_id\": 999999999,\n  \"tipo\": \"entrada\",\n  \"quantidade\": 1,\n  \"motivo\": \"Teste de produto inexistente\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_cffa0e7c1e784c05a92375e296a058b1",
+          "disabled": false
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_f934a2f7045c489d8bc1b0e1f769d2b1",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529658824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 404 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(404); });"
+    },
+    {
+      "_id": "fld_92de051dbdbd4fbab9db68ec9eb236b2",
+      "parentId": "wrk_4ee678d8d0ad44059a9439d5761c9f5c",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "name": "04 - Erros tratados e integridade referencial",
+      "description": "Use para demonstrar casos 400, 404 e 409 exigidos na avaliação.",
+      "environment": {},
+      "environmentPropertyOrder": {
+        "&": []
+      },
+      "metaSortKey": 45000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_0bcd162b056f4ed9a2fd7145c5ad565f",
+      "parentId": "fld_92de051dbdbd4fbab9db68ec9eb236b2",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/categorias/{{ _.categoria_audio_id }}",
+      "name": "01 - Impedir exclusão de categoria em uso (409)",
+      "description": "A categoria de áudio está vinculada ao microfone cadastrado; a chave estrangeira deve impedir a exclusão e a API responder 409.",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_f8caebb9ed1a428facf520a9a0ac0187",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529656824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 409 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(409); });"
+    },
+    {
+      "_id": "req_ccebff01a9e7415eb723573f9299e54e",
+      "parentId": "fld_92de051dbdbd4fbab9db68ec9eb236b2",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/produtos?tipo=qualquer-coisa",
+      "name": "02 - Parâmetro de tipo inválido (400)",
+      "description": "Teste intencional de validação de query string.",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_25759772508346ee941d9e96fbd77743",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529655824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 400 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(400); });"
+    },
+    {
+      "_id": "req_13d2d7347b8b4e5490c466f590e438b6",
+      "parentId": "fld_92de051dbdbd4fbab9db68ec9eb236b2",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/categorias/999999999",
+      "name": "03 - Consultar categoria inexistente (404)",
+      "description": "Teste intencional de categoria que não existe.",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_aa868e6f51264be3859cb8e7a63ee208",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529654824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 404 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(404); });"
+    },
+    {
+      "_id": "fld_435f2ea035b84929907fdce4478a4d8a",
+      "parentId": "wrk_4ee678d8d0ad44059a9439d5761c9f5c",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "name": "99 - Encerrar sessão",
+      "description": "Execute somente depois de terminar os testes autenticados.",
+      "environment": {},
+      "environmentPropertyOrder": {
+        "&": []
+      },
+      "metaSortKey": 49000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_d21c4ea1b30f43eba24913df6a89a9f7",
+      "parentId": "fld_435f2ea035b84929907fdce4478a4d8a",
+      "modified": 1795529702824,
+      "created": 1795529702824,
+      "url": "{{ _.base_url }}/api/auth/logout",
+      "name": "Logout",
+      "description": "Encerra a sessão e invalida o cookie de autenticação.",
+      "method": "POST",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_d68f39af42134896a260c8295c68660e",
+          "disabled": false
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795529652824,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "afterResponseScript": "insomnia.test('Status HTTP 200 esperado', () => { insomnia.expect(insomnia.response.status).to.eql(200); });"
+    }
+  ]
+}

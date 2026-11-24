@@ -56,19 +56,55 @@ As tabelas `items` e `movements` possuem restrições no PostgreSQL para impedir
 
 > **Importante:** para atender ao requisito acadêmico de banco em produção, use uma instância PostgreSQL hospedada na nuvem. O PostgreSQL instalado apenas no computador local não atende a esse critério.
 
-## 5. Configurar o banco PostgreSQL na nuvem (Neon)
+## 5. Configurar o banco PostgreSQL na nuvem (Supabase)
 
-Este projeto usa o driver `pg`, compatível com PostgreSQL padrão. O Neon foi escolhido como caminho documentado porque fornece uma URL PostgreSQL que pode ser utilizada diretamente pela variável `DATABASE_URL`.
+Este projeto utiliza o driver `pg` para acessar PostgreSQL diretamente pelo backend. O Supabase hospeda o banco; a API continua sendo responsável por validar e executar as operações. **Não coloque a senha do banco, `service_role` ou qualquer chave secreta no JavaScript do navegador.**
 
-1. Crie uma conta no [Neon](https://neon.tech/) e crie um projeto PostgreSQL.
-2. Abra o projeto e clique em **Connect** no painel.
-3. Selecione a branch, o banco e o usuário (role) que serão utilizados.
-4. Copie a connection string gerada pelo painel. Mantenha os parâmetros de segurança TLS fornecidos pelo Neon, normalmente `sslmode=require` e `channel_binding=require`.
-5. Guarde essa URL para configurar o arquivo `.env` na próxima etapa.
+1. Acesse [Supabase](https://supabase.com/) e crie uma conta.
+2. No painel, crie uma organização (caso ainda não exista) e clique em **New project**.
+3. Informe um nome, escolha uma senha forte para o banco e selecione uma região próxima dos usuários, quando disponível. Guarde a senha com segurança.
+4. Aguarde o provisionamento do projeto.
+5. No painel do projeto, clique em **Connect**.
+6. Em conexão PostgreSQL, escolha **Session pooler** e copie a connection string completa.
+7. Use a string exatamente como o Supabase mostrar. Ela costuma seguir este formato ilustrativo:
 
-Documentação oficial: [Connecting Neon to your stack](https://neon.com/docs/get-started/connect-neon) e [onde encontrar a connection string](https://neon.com/docs/connect/connect-from-any-app).
+```text
+postgresql://postgres.PROJECT_REF:SENHA@HOST_DO_POOLER:5432/postgres?sslmode=require
+```
 
-Também é possível utilizar Supabase: crie um projeto PostgreSQL e copie a connection string nas configurações de banco de dados. Use o formato recomendado pelo painel e os parâmetros SSL fornecidos pelo provedor.
+O host e o usuário do pooler são específicos do projeto; não tente montá-los manualmente. Substitua o marcador de senha pela senha criada. Se a senha tiver caracteres reservados na URL (`@`, `#`, `?`, `&`, espaços etc.), faça o percent-encoding desses caracteres ou redefina a senha para uma que possa ser representada com segurança em uma URL.
+
+**Por que Session pooler?** A aplicação Express é um backend persistente e o serviço Render utiliza uma rede IPv4. O Supabase recomenda o pooler compartilhado em modo Session para backends persistentes em redes IPv4; a conexão direta gratuita é IPv6. Não escolha Transaction pooler nesta configuração. Consulte a documentação: [Supabase — Connect to your database](https://supabase.com/docs/guides/database/connecting-to-postgres) e [Render — Connect a Render service to Supabase](https://render.com/articles/how-to-connect-a-render-service-to-supabase-postgres).
+
+### 5.1 Conectar o projeto local ao Supabase
+
+Na pasta do projeto, crie o `.env` a partir do modelo:
+
+**Windows (PowerShell):**
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Abra `.env` e configure a URL copiada do Supabase e as demais variáveis:
+
+```env
+DATABASE_URL="COLE_AQUI_A_URL_SESSION_POOLER_DO_SUPABASE"
+SESSION_SECRET="COLOQUE_AQUI_UMA_CHAVE_ALEATORIA_LONGA"
+PORT=3000
+COOKIE_SECURE=false
+DB_POOL_MAX=5
+```
+
+Gere um segredo de sessão exclusivo com Node.js:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+```
+
+Copie o resultado para `SESSION_SECRET`. O valor deve ter pelo menos 32 caracteres. Mantenha `COOKIE_SECURE=false` somente no teste local via HTTP; no Render, que fornece HTTPS, configure `true`.
+
+Documentação oficial: [Supabase — Connect to your database](https://supabase.com/docs/guides/database/connecting-to-postgres).
 
 ## 6. Instalação e execução
 
@@ -100,11 +136,11 @@ Copy-Item .env.example .env
 Abra `.env` e substitua os valores de exemplo:
 
 ```env
-DATABASE_URL="postgresql://USUARIO:SENHA@HOST-DO-NEON/NOME_DO_BANCO?sslmode=require&channel_binding=require"
+DATABASE_URL="COLE_AQUI_A_URL_SESSION_POOLER_DO_SUPABASE"
 SESSION_SECRET="GERE_UMA_CHAVE_ALEATORIA_LONGA_E_EXCLUSIVA"
 PORT=3000
 COOKIE_SECURE=false
-DB_POOL_MAX=10
+DB_POOL_MAX=5
 ```
 
 - `DATABASE_URL`: URL de conexão do PostgreSQL hospedado.
@@ -167,7 +203,87 @@ Para outros computadores da rádio acessarem a interface:
 
 O banco permanece hospedado na nuvem. A aplicação local faz as consultas e alterações no banco remoto pela API. Para disponibilizar o próprio sistema publicamente, será necessário hospedar também a API e configurar HTTPS; essa publicação da API é um diferencial opcional do trabalho.
 
-## 8. Endpoints da API
+## 8. Hospedar a aplicação no Render
+
+O projeto serve a interface e a API pelo mesmo servidor Express. Portanto, publique-o como **Web Service**, e não como Static Site.
+
+### 8.1 Publicar o código no GitHub
+
+1. Crie um repositório no [GitHub](https://github.com/), por exemplo `estoqueja-radio`.
+2. Envie para a raiz do repositório o conteúdo de dentro da pasta `estoque-radio` (o `package.json`, `src/` e `public/` devem ficar na raiz do repositório).
+3. Faça o primeiro commit e push. Pela linha de comando, dentro da pasta do projeto:
+
+```bash
+git init
+git add .
+git commit -m "feat: primeira versão do EstoqueJá"
+git branch -M main
+git remote add origin https://github.com/SEU_USUARIO/estoqueja-radio.git
+git push -u origin main
+```
+
+4. Antes de enviar, confirme que `.env` não aparece entre os arquivos versionados. O `.gitignore` já ignora esse arquivo. Envie `.env.example`, que contém somente nomes e exemplos de variáveis.
+
+### 8.2 Criar o Web Service
+
+1. Entre em [Render](https://render.com/) e conecte sua conta GitHub.
+2. No painel Render, clique em **New + > Web Service** e escolha o repositório `estoqueja-radio`.
+3. Configure:
+
+| Campo | Valor |
+|---|---|
+| Name | `estoqueja-radio` (ou outro nome disponível) |
+| Language / Runtime | `Node` |
+| Branch | `main` |
+| Root Directory | deixe vazio se `package.json` estiver na raiz do repositório; se estiver dentro da subpasta `estoque-radio`, informe `estoque-radio` |
+| Build Command | `npm install` |
+| Start Command | `npm start` |
+| Health Check Path (Advanced) | `/api/health` |
+
+4. Selecione a instância disponível para o seu orçamento. Para demonstração acadêmica, o plano gratuito pode servir; considere suas limitações antes de qualquer uso operacional.
+5. Antes de concluir, abra a seção **Environment Variables** do serviço e adicione as variáveis abaixo:
+
+| Key | Value |
+|---|---|
+| `DATABASE_URL` | URL completa do **Session pooler** do Supabase |
+| `SESSION_SECRET` | segredo aleatório longo e exclusivo para produção (não reutilize o local) |
+| `COOKIE_SECURE` | `true` |
+| `DB_POOL_MAX` | `5` |
+| `NODE_ENV` | `production` |
+
+Não defina `PORT` manualmente: o Render fornece a porta para o processo. Não inclua aspas extras em torno dos valores no painel de variáveis.
+
+6. Clique em **Create Web Service** e acompanhe a aba **Logs** até o deploy terminar.
+7. Quando o serviço estiver ativo, abra o endereço `https://NOME-DO-SERVICO.onrender.com` exibido pelo Render. A interface e a API estarão no mesmo domínio.
+
+O Render permite adicionar e alterar as variáveis em **Environment** e redeployar o serviço. Consulte [Render — Deploy a Node Express App](https://render.com/docs/deploy-node-express-app) e [Render — Environment Variables](https://render.com/docs/configure-environment-variables).
+
+### 8.3 Testar a publicação
+
+Abra no navegador:
+
+```text
+https://NOME-DO-SERVICO.onrender.com/api/health
+```
+
+Resposta esperada:
+
+```json
+{"status":"ok","database":"connected"}
+```
+
+Depois abra a página principal, faça login e teste cadastro, edição, exclusão e movimentações. Faça também os testes da API com Postman, Insomnia ou Thunder Client. Após conectar o GitHub ao Render, novos pushes para a branch escolhida podem disparar novos deploys automaticamente.
+
+### 8.4 Limitações dos planos gratuitos
+
+- Render Free pode suspender o serviço web após 15 minutos sem requisições; a primeira visita seguinte pode demorar cerca de um minuto para reativá-lo. O sistema é adequado para apresentação e testes, mas não para disponibilidade contínua sem avaliar um plano pago.
+- Projetos Supabase Free com pouca atividade por sete dias podem ser pausados. O proprietário recebe avisos e pode reativar o projeto pelo painel.
+- O plano gratuito do Supabase não inclui backups automáticos para download. Faça cópias de segurança próprias antes de inserir dados importantes.
+- Para uso real na rádio, não dependa exclusivamente de serviços gratuitos sem política de backup, restauração e disponibilidade aprovada pela empresa.
+
+Referências: [Render — Free services](https://render.com/docs/free), [Supabase — Project pausing](https://supabase.com/docs/guides/platform/free-project-pausing).
+
+## 9. Endpoints da API
 
 Todas as rotas de negócio exigem autenticação por sessão. Primeiro, faça login em `POST /api/auth/login`; depois, mantenha o cookie de sessão nas próximas requisições. A rota `/api/health` e o login são públicos.
 
