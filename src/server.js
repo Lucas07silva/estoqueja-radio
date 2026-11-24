@@ -14,6 +14,9 @@ if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) {
 const app = express();
 const port = Number(process.env.PORT) || 3000;
 
+// Informa ao Express que a aplicação está atrás do proxy HTTPS do Render.
+app.set("trust proxy", 1);
+
 // Segurança básica dos cabeçalhos HTTP. A política CSP fica desativada neste MVP porque
 // a interface usa estilos e scripts locais com algumas dependências externas do Google Fonts.
 app.disable("x-powered-by");
